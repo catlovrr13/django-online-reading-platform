@@ -38,9 +38,9 @@ urlpatterns = [
     
     path('api/profile/', UserProfileView.as_view(), name='user-profile'),
     
-    path('api/books/', BookListView.as_view()),
+    path('books/', BookListView.as_view()),
     
-    path('api/books/<int:pk>/', BookDetailView.as_view()),
+    path('books/<int:pk>/', BookDetailView.as_view()),
 
     path('api/book/<int:book_id>/chapter/<int:chapter_id>/', ChapterDetailView.as_view(), name='chapter-detail'),
     
@@ -50,9 +50,9 @@ urlpatterns = [
     
     path('api/unsubscribe/', UnsubscribeView.as_view(), name='unsubscribe'),
     
-    path('api/subscription-types/', SubscriptionTypeListView.as_view(), name='subscription-type-list-create'),
+    path('subscription-types/', SubscriptionTypeListView.as_view(), name='subscription-type-list-create'),
     
-    path('api/subscription-types/<int:pk>/', SubscriptionTypeDetailView.as_view(), name='subscription-type-detail'),
+    path('subscription-types/<int:pk>/', SubscriptionTypeDetailView.as_view(), name='subscription-type-detail'),
     
     path('api/user-profiles/', UserProfileListView.as_view(), name='user-profile-list-create'),
     
