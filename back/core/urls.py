@@ -34,30 +34,34 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     
+    # registration and user profile
     path('api/register/', UserRegistrationView.as_view(), name='user-registration'),
     
     path('api/profile/', UserProfileView.as_view(), name='user-profile'),
-    
-    path('books/', BookListView.as_view()),
-    
-    path('books/<int:pk>/', BookDetailView.as_view()),
-
-    path('api/book/<int:book_id>/chapter/<int:chapter_id>/', ChapterDetailView.as_view(), name='chapter-detail'),
-    
-    path('api/book/<int:book_id>/chapters/', AllChaptersView.as_view(), name='all-chapters'),
-    
-    path('api/subscribe/', SubscribeToPremiumView.as_view(), name='subscribe-to-premium'),
-    
-    path('api/unsubscribe/', UnsubscribeView.as_view(), name='unsubscribe'),
-    
-    path('subscription-types/', SubscriptionTypeListView.as_view(), name='subscription-type-list-create'),
-    
-    path('subscription-types/<int:pk>/', SubscriptionTypeDetailView.as_view(), name='subscription-type-detail'),
-    
     path('api/user-profiles/', UserProfileListView.as_view(), name='user-profile-list-create'),
-    
     path('api/user-profiles/<int:pk>/', UserProfileDetailView.as_view(), name='user-profile-detail'),
     
-    path('api/profile/', UserProfileView.as_view(), name='user-profile'),
+    
+    # book and chapter views
+    path('books/', BookListView.as_view()),
+    path('books/<int:pk>/', BookDetailView.as_view()),
+    
+    path('api/book/<int:book_id>/chapter/<int:chapter_id>/', ChapterDetailView.as_view(), name='chapter-detail'),
+    path('api/book/<int:book_id>/chapters/', AllChaptersView.as_view(), name='all-chapters'),
+    
+    # subscription management
+    path('api/subscribe/', SubscribeToPremiumView.as_view(), name='subscribe-to-premium'),
+    path('api/unsubscribe/', UnsubscribeView.as_view(), name='unsubscribe'),
+    
+    # subscription type views
+    path('subscription-types/', SubscriptionTypeListView.as_view(), name='subscription-type-list-create'),
+    path('subscription-types/<int:pk>/', SubscriptionTypeDetailView.as_view(), name='subscription-type-detail'),
+    
+    # admin book and chapter management
+    path('api/books/create/', BookCreateView.as_view(), name='book-create'),
+    path('api/books/<int:pk>/edit/', BookUpdateDeleteView.as_view(), name='book-update'),
+    
+    path('api/books/<int:book_id>/chapters/create/', ChapterCreateView.as_view(), name='chapter-create'),
+    path('api/books/<int:book_id>/chapters/<int:chapter_number>/edit/', ChapterUpdateDeleteView.as_view(), name='chapter-update-delete'),
     
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
