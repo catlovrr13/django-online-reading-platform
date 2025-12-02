@@ -1,0 +1,64 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django specific
+*.log
+*.pot
+*.pyc
+db.sqlite3
+db.sqlite3-journal
+
+# Media & Static (optional: ignore collected static files)
+media/
+staticfiles/
+static/
+
+# Virtual environment
+venv/
+.env/
+.env.local
+.env.*.json
+
+# Secret keys
+*.env
+*.key
+
+# Migrations (optional, only ignore if you auto-generate migrations)
+# **Uncomment below if you don’t want to track migration files**
+# */migrations/*
+# !*/migrations/__init__.py
+
+# IDE & OS files
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# Byte-compiled / cache
+pip-log.txt
+pip-delete-this-directory.txt
+
+# pytest
+.cache/
+.pytest_cache/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
+.cache
+
+# Build
+build/
+dist/
+*.egg-info/
+.eggs/
