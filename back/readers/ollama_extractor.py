@@ -129,7 +129,7 @@ class OllamaExtractor:
             book = epub.read_epub(file_path)
             chapters_processed = 0
             
-            print(f"Extracting text from EPUB")
+            print("\nExtracting text from EPUB")
             
             for item in book.get_items():
                 if item.get_type() == ebooklib.ITEM_DOCUMENT: #ccheck for readable text

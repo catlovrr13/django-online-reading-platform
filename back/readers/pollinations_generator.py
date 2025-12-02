@@ -17,7 +17,7 @@ class PollinationsGenerator:
         
         self.pollinations_url = "https://image.pollinations.ai/prompt/"
         
-        print("Image Generator initialized")
+        print("\nImage Generator initialized")
     
     def _call_ollama(self, prompt: str, max_tokens: int = 200) -> str:
         try:
@@ -160,7 +160,7 @@ class PollinationsGenerator:
         chapter_title = chapter_data.get('title', 'Chapter')
         chapter_summary = chapter_data.get('summary', '')
         
-        print(f"Creating illustration prompt for Chapter {chapter_num}")
+        print(f"\nCreating illustration prompt for Chapter {chapter_num}")
         
         if chapter_summary and len(chapter_summary) > 15:
             genre = book_context.get('genre', 'Fiction')
@@ -244,7 +244,7 @@ class PollinationsGenerator:
             f"?width={width}&height={height}&model={model}&nologo=true&enhance=true"
         )
         
-        print("Generating image with Pollinations.ai")
+        print("\nGenerating image with Pollinations.ai")
         
         for attempt in range(retries):
             try:
@@ -279,7 +279,7 @@ class PollinationsGenerator:
         return None
     
     def process_and_save_image(self, image_bytes: bytes, target_size: Tuple[int, int]) -> ContentFile:
-        print(f"Processing image to size {target_size}")
+        print(f"\nProcessing image to size {target_size}\n")
         
         try:
             image = Image.open(io.BytesIO(image_bytes))
@@ -316,7 +316,7 @@ class PollinationsGenerator:
             raise Exception(f"Error processing image: {str(e)}")
     
     def generate_book_cover(self, book_metadata: Dict) -> Tuple[Optional[ContentFile], str]:
-        print("GENERATING BOOK COVER")
+        print("\nGENERATING BOOK COVER\n")
         
         prompt = self.generate_cover_prompt(book_metadata)
         
@@ -337,7 +337,7 @@ class PollinationsGenerator:
             cover_size = getattr(settings, 'BOOK_COVER_SIZE', (800, 1200))
             processed_image = self.process_and_save_image(image_bytes, cover_size)
             
-            print("COVER GENERATION COMPLETE")
+            print("\nCOVER GENERATION COMPLETE")
             
             return processed_image, prompt
             
@@ -359,7 +359,7 @@ class PollinationsGenerator:
         image_bytes = self.generate_image_pollinations(
             prompt,
             width=512,
-            height=512,
+            height=768,
             model="turbo"
         )
         
@@ -367,7 +367,7 @@ class PollinationsGenerator:
             return None, prompt
         
         try:
-            chapter_size = getattr(settings, 'CHAPTER_IMAGE_SIZE', (1024, 1024))
+            chapter_size = getattr(settings, 'CHAPTER_IMAGE_SIZE', (800, 1200))
             processed_image = self.process_and_save_image(image_bytes, chapter_size)
         
             print(f"Chapter {chapter_num} illustration complete")
@@ -379,7 +379,7 @@ class PollinationsGenerator:
             return None, prompt
 
     def generate_all_images(self, book_metadata: Dict, chapters: list,max_chapters: int = 20) -> Dict:
-        print("BATCH IMAGE GENERATION")
+        print("\nBATCH IMAGE GENERATION\n")
         
         results = {
             'cover': None,
@@ -392,7 +392,7 @@ class PollinationsGenerator:
         print("\nChapter Illustrations")
         chapters_to_process = chapters[:max_chapters]
         
-        for i, chapter in enumerate(chapters_to_process, 1):
+        for i, chapter in enumerate(chapters_to_process, 1): # progress bar
             print(f"\n[{i}/{len(chapters_to_process)}]")
             
             chapter_result = self.generate_chapter_illustration(
@@ -409,7 +409,7 @@ class PollinationsGenerator:
             if i < len(chapters_to_process):
                 time.sleep(1)
         
-        print("BATCH GENERATION COMPLETE")
+        print("\nBATCH GENERATION COMPLETE")
         print(f"Cover: {'✓' if results['cover'][0] else '✗'}")
         print(f"Chapters: {len([c for c in results['chapters'].values() if c[0]])}/{len(chapters_to_process)}")
         

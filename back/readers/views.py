@@ -259,7 +259,7 @@ class ChapterDetailView(generics.RetrieveAPIView):
         chapter_number = self.kwargs['chapter_id']
 
         try:
-            chapter = get_object_or_404(
+            chapter = Chapter.objects.select_related('book').get(
                 chapter_number=chapter_number,
                 book_id=book_id
             )

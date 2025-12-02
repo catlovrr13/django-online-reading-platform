@@ -29,7 +29,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ['id', 'username', 'email', 'card_number', 'subscription_type', 'img']
+        fields = ['id', 'username', 'card_number', 'subscription_type', 'img']
 
     def validate_card_number(self, value):
         if not value.isdigit():
