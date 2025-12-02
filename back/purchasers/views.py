@@ -41,7 +41,11 @@ class UserRegistrationView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.save()
+        
+        username = " ".join(serializer.validated_data.get("username").strip().split())
+        
+        user = serializer.save(username=username)
+        
         return Response(
             {
                 "user": UserRegistrationSerializer(

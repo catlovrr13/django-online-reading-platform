@@ -239,8 +239,6 @@ class ChapterUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
         )
         
         return chapter
-    
-
 
 class BookListView(generics.ListAPIView):
     queryset = Book.objects.all()
