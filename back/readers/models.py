@@ -1,5 +1,6 @@
 from django.db import models
-from django.core.validators import FileExtensionValidator
+from django.core.validators import FileExtensionValidator, MinValueValidator, MaxValueValidator
+
 
 # Create your models here.
 class Book(models.Model):
@@ -56,8 +57,19 @@ class Book(models.Model):
     def __str__(self):
         return self.title or f"Book {self.id}"
     
+    # properties for rating - pozon
+    @property
+    def average_rating(self) -> float | None:
+        agg = self.ratings.aggregate(avg=models.Avg('rating'))
+        return round(agg['avg'], 1) if agg['avg'] is not None else None
+
+    @property
+    def rating_count(self) -> int:
+        return self.ratings.count()
+    
     class Meta:
         ordering = ['-created_at']
+    
     
 class Chapter(models.Model):
     book = models.ForeignKey(
@@ -81,3 +93,29 @@ class Chapter(models.Model):
     
     def __str__(self):
         return f"Ch. {self.chapter_number}: {self.title}"
+    
+# Added Book Ratings function - Pozon
+class BookRating(models.Model):          
+    book = models.ForeignKey(
+        Book,
+        on_delete=models.CASCADE,
+        related_name='ratings'
+    )
+    user = models.ForeignKey(
+        'purchasers.UserProfile',
+        on_delete=models.CASCADE,
+        related_name='book_ratings'
+    )
+    rating = models.PositiveIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
+    review = models.TextField(blank=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        unique_together = ['book', 'user']
+    
+    def __str__(self):
+        return f"{self.user.user.username} - {self.book.title}: {self.rating}★"

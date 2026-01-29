@@ -279,3 +279,33 @@ class AllChaptersView(generics.ListAPIView):
         queryset = Chapter.objects.filter(book_id=book_id).select_related('book')
         
         return self.filter_queryset(queryset)
+    
+# Booking Rating Views - Pozon
+class BookRatingCreateView(generics.CreateAPIView):
+    queryset = BookRating.objects.all()
+    serializer_class = BookRatingSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        book_id = self.kwargs['book_id']
+        book = get_object_or_404(Book, pk=book_id)
+        serializer.save(user=self.request.user, book=book)
+
+class BookRatingListView(generics.ListAPIView):
+    serializer_class = BookRatingSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        book_id = self.kwargs['book_id']
+        return BookRating.objects.filter(book_id=book_id)
+    
+class BookRatingDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = BookRatingSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return get_object_or_404(
+            BookRating,
+            pk=self.kwargs['rating_id'],
+            book_id=self.kwargs['book_id']
+        )

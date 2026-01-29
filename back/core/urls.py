@@ -42,13 +42,18 @@ urlpatterns = [
     path('api/user-profiles/<int:pk>/', UserProfileDetailView.as_view(), name='user-profile-detail'),
     
     
-    # book and chapter views
+    # book, chapter and rating views
     path('books/', BookListView.as_view()),
     path('books/<int:pk>/', BookDetailView.as_view()),
     
     path('api/book/<int:book_id>/chapter/<int:chapter_id>/', ChapterDetailView.as_view(), name='chapter-detail'),
     path('api/book/<int:book_id>/chapters/', AllChaptersView.as_view(), name='all-chapters'),
-    
+
+    path('books/<int:book_id>/ratings/', BookRatingListView.as_view(), name='book-ratings-list'),
+    path('books/<int:book_id>/ratings/create/', BookRatingCreateView.as_view(), name='book-rating-create'),
+    path('books/<int:book_id>/ratings/<int:pk>/', BookRatingDetailView.as_view(), name='book-rating-detail'),
+
+
     # subscription management
     path('api/subscribe/', SubscribeToPremiumView.as_view(), name='subscribe-to-premium'),
     path('api/unsubscribe/', UnsubscribeView.as_view(), name='unsubscribe'),
