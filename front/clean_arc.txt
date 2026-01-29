@@ -1,0 +1,56 @@
+front/
+    - public/
+        - vite.svg
+    
+    - src/
+         - assets/
+            - images/
+            - icons/
+
+         - components/
+            - ui/
+                - button.tsx
+                - input.tsx
+                - separator.tsx
+                - sheet.tsx
+                - sidebar.tsx
+                - skeleton.tsx
+                - sonner.tsx
+                - tooltip.tsx
+            - layout/
+
+            - Appsidebar.jsx
+            
+         - hooks/
+            - use-mobile.ts
+
+         - lib/
+            - utils.ts
+
+         - pages/
+            - App.jsx
+            - Books.jsx
+            - index.css
+            - Profile.jsx
+
+        - routes/
+            - router.jsx
+
+        - services/
+            - store/
+            - api/
+                - auth/
+                
+        - types/
+
+    - .gitignore
+    - components.json
+    - eslint.config.js
+    - index.html
+    - package-lock.json
+    - package.json
+    - README.md
+    - tsconfig.app.json
+    - tsconfig.json
+    - vite.config.js
+
