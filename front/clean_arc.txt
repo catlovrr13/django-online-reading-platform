@@ -28,10 +28,15 @@ front/
             - utils.ts
 
          - pages/
-            - App.jsx
-            - Books.jsx
+            - App.jsx            #this is the main page
+            - Login.jsx          #either login/signup/or guest
+            - Subscription.jsx   #this includes the payment thingy
+            - About_Us.jsx       #small info abt the company
+            - Upload.jsx         #admin view for uploading books and using AI
+            - Library.jsx        #the whole list of books (can be filtered and searched)
+            - Book.jsx           #individual views ng book (ratings, review, summary, etc.)
             - index.css
-            - Profile.jsx
+            - Profile.jsx        #a user's profile and the list of books theyve saved/rated
 
         - routes/
             - router.jsx
