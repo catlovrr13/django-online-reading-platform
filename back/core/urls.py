@@ -53,6 +53,9 @@ urlpatterns = [
     path('books/<int:book_id>/ratings/create/', BookRatingCreateView.as_view(), name='book-rating-create'),
     path('books/<int:book_id>/ratings/<int:pk>/', BookRatingDetailView.as_view(), name='book-rating-detail'),
 
+    # library & history
+    path('api/me/library/', LibraryDetailView.as_view(), name='library-view'),
+    path('api/books/<int:book_id>/history/', HistoryListView.as_view(), name='history'),
 
     # subscription management
     path('api/subscribe/', SubscribeToPremiumView.as_view(), name='subscribe-to-premium'),

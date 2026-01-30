@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Book, Chapter, BookRating
+from .models import Book, Chapter, BookRating, History, Library, Genre
 
 class BookSerializer(serializers.ModelSerializer):
 
@@ -50,3 +50,31 @@ class BookRatingSerializer(serializers.ModelSerializer):
             'rating',
             'review'
         ]
+        
+class HistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = History
+        fields = ['id', 'progress', 'last_read_at', 'book']
+        read_only_fields = ['id', 'last_read_at', 'book']   
+        extra_kwargs = {'progress': {'required': False}}
+        
+class LibrarySerializer(serializers.ModelSerializer):
+    title = serializers.CharField(source='book.title')
+    author = serializers.CharField(source='book.author')
+    cover_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Library
+        fields = ['id', 'book', 'title', 'author', 'cover_url', 'added_at']
+
+    def get_cover_url(self, obj):
+        if obj.book.cover:
+            return obj.book.cover.url
+        return None
+    
+class GenreSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=100)
+    
+    class Meta:
+        model = Genre
+        fields = ['id', 'name']

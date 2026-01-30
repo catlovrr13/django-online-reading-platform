@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .serializers import *
-from .models import Book, Chapter
+from .models import Book, Chapter, BookRating, History
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.filters import SearchFilter, OrderingFilter
 from .permissions import CanAccessChapter
@@ -12,6 +12,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from django.conf import settings
 from django.shortcuts import get_object_or_404
+from rest_framework.pagination import PageNumberPagination
 
 # Create your views here.
 class BookCreateView(generics.CreateAPIView):
@@ -309,3 +310,35 @@ class BookRatingDetailView(generics.RetrieveUpdateDestroyAPIView):
             pk=self.kwargs['rating_id'],
             book_id=self.kwargs['book_id']
         )
+
+class HistoryListView(generics.RetrieveUpdateAPIView): # this is for a specific book
+    serializer_class = HistorySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        obj = History.objects.filter(
+            book_id=self.kwargs['book_id'],
+            user__user=self.request.user
+        ).first()
+
+        if obj is None:
+            obj = History.objects.create(
+                book_id=self.kwargs['book_id'],
+                user=self.request.user.userprofile, 
+                progress=0.0
+            )
+        return obj
+    
+class LibraryDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = LibrarySerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = PageNumberPagination
+    
+    def get_object(self):
+        book_id = self.kwargs['book_id']
+        obj = get_object_or_404(
+            Library,
+            book_id=book_id,
+            user__user=self.request.user
+        )
+        return obj

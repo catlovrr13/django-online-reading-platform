@@ -2,9 +2,14 @@ from django.contrib import admin
 from django.contrib import messages
 from django.utils.html import format_html
 from django.conf import settings
-from .models import Book, Chapter
+from .models import Book, Chapter, BookRating, History, Genre, Library
 from .ollama_extractor import OllamaExtractor
 from .pollinations_generator import PollinationsGenerator
+
+admin.site.register(BookRating)
+admin.site.register(History)
+admin.site.register(Genre)
+admin.site.register(Library)
 
 class ChapterInline(admin.TabularInline):
     model = Chapter
