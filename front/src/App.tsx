@@ -6,19 +6,22 @@ import { queryClient } from './lib/queryClient'
 import { Provider } from 'react-redux'
 import { CookiesProvider } from 'react-cookie'
 import { store } from '@/hooks/redux/store'
+import { ThemeProvider } from './components/theme-provider'
 
 function App() {
 
 
   return (
-    <CookiesProvider>
-      <Provider store={store}>
-        <QueryClientProvider client={queryClient}>
-          <RouterProvider router={router} />
-          <Toaster />
-        </QueryClientProvider>
-      </Provider>
-    </CookiesProvider>
+    <ThemeProvider defaultTheme="light" storageKey="ui-theme">
+      <CookiesProvider>
+        <Provider store={store}>
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+            <Toaster />
+          </QueryClientProvider>
+        </Provider>
+      </CookiesProvider>
+    </ThemeProvider>
   )
 }
 
