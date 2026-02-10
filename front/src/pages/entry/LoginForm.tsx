@@ -58,7 +58,7 @@ function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                     </Button>
                     
                     <div className="flex items-center gap-2 text-sm">
-                        <span className="opacity-70">Don't have an account?</span>
+                        <span className="opacity-70 text-1xs">Don't have an account?</span>
                         <Button 
                             type="button" 
                             variant="link" 

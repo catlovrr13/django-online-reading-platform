@@ -61,7 +61,7 @@ function Entry() {
                                 <Button 
                                     type='button' 
                                     variant='link' 
-                                    className='opacity-35'
+                                    className='opacity-35 text-1xs'
                                 >
                                     Continue as guest
                                 </Button>
