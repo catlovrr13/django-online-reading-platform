@@ -3,6 +3,18 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Header2 } from '@/components/custom-components/headers'
+import { toast } from 'sonner'
+import {
+    InputGroup,
+    InputGroupAddon,
+    InputGroupButton,
+    InputGroupInput,
+    InputGroupText,
+    InputGroupTextarea,
+} from "@/components/ui/input-group"
+
+// media
+import { EyeIcon, EyeOffIcon } from 'lucide-react'
 
 // function
 import { useState, useEffect } from 'react'
@@ -22,6 +34,8 @@ function LoginForm({ onSwitchToRegister }: LoginFormProps) {
     const [email, setEmail] = useState<string>("")
     const [password, setPassword] = useState<string>("")
     const [hidden, setHidden] = useState<boolean>(true)
+
+    const [peek, setPeek] = useState<boolean>(false)
 
     const reset = () => {
         setEmail("")
@@ -57,14 +71,19 @@ function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                 
                 <div className="flex flex-col gap-2">
                     <Label htmlFor="password">Password</Label>
-                    <Input 
-                        id="password" 
-                        type="password" 
-                        value={password}
-                        placeholder="••••••••"
-                        required
-                        onChange={e => setPassword(e.target.value)}
-                    />
+                    <InputGroup>
+                        <InputGroupInput 
+                        id='password'
+                        type={!peek ? 'password' : 'text'}
+                        placeholder='••••••••'
+                        value={password} 
+                        onChange={e => setPassword(e.target.value)}/>
+                        <InputGroupAddon align="inline-end">
+                            <InputGroupButton onClick={()=>setPeek(!peek)}>
+                                {peek ? <EyeIcon/> : <EyeOffIcon/>}
+                            </InputGroupButton>
+                        </InputGroupAddon>
+                    </InputGroup>
                 </div>
                 
                 <Button type="submit" className="w-full mt-2" disabled={!email && !password}>

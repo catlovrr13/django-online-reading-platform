@@ -31,7 +31,6 @@ function Entry() {
     const [viewMode, setViewMode] = useState<ViewMode>('initial')
 
     const nav = useNavigate()
-
     const guestNav: any = () => {
         nav("/home")
     }

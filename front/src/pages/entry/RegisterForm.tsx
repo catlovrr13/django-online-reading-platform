@@ -4,7 +4,15 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Header2 } from '@/components/custom-components/headers'
 import { toast } from 'sonner'
+import {
+    InputGroup,
+    InputGroupAddon,
+    InputGroupButton,
+    InputGroupInput
+} from "@/components/ui/input-group"
 
+// media
+import { EyeIcon, EyeOffIcon } from 'lucide-react'
 
 // function
 import { useState, useEffect } from 'react'
@@ -44,6 +52,8 @@ function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
     const [confirm, setConfirm] = useState<string>("")
     const [hidden, setHidden] = useState<boolean>(true)
 
+    const [peek, setPeek] = useState<boolean>(false)
+    const [peekCon, setPeekCon] = useState<boolean>(false)
 
     const reset = () => {
         setEmail("")
@@ -92,26 +102,36 @@ function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                 
                 <div className="flex flex-col gap-2">
                     <Label htmlFor="register-password">Password</Label>
-                    <Input 
-                        id="register-password" 
-                        type="password" 
-                        value={password}
-                        placeholder="Create a strong password"
-                        required
-                        onChange={e => setPassword(e.target.value)}
-                    />
+                    <InputGroup>
+                        <InputGroupInput 
+                        id='register-password'
+                        type={!peek ? 'password' : 'text'}
+                        placeholder='Enter a password'
+                        value={password} 
+                        onChange={e => setPassword(e.target.value)}/>
+                        <InputGroupAddon align="inline-end">
+                            <InputGroupButton onClick={()=>setPeek(!peek)}>
+                                {peek ? <EyeIcon/> : <EyeOffIcon/>}
+                            </InputGroupButton>
+                        </InputGroupAddon>
+                    </InputGroup>
                 </div>
                 
                 <div className="flex flex-col gap-2">
                     <Label htmlFor="confirm-password">Confirm Password</Label>
-                    <Input 
-                        id="confirm-password" 
-                        type="password" 
-                        value={confirm}
-                        placeholder="Confirm your password"
-                        required
-                        onChange={e => setConfirm(e.target.value)}
-                    />
+                    <InputGroup>
+                        <InputGroupInput 
+                        id='confirm-password'
+                        type={!peekCon ? 'password' : 'text'}
+                        placeholder='Confirm your password'
+                        value={confirm} 
+                        onChange={e => setConfirm(e.target.value)}/>
+                        <InputGroupAddon align="inline-end">
+                            <InputGroupButton onClick={()=>setPeekCon(!peekCon)}>
+                                {peekCon ? <EyeIcon/> : <EyeOffIcon/>}
+                            </InputGroupButton>
+                        </InputGroupAddon>
+                    </InputGroup>
                 </div>
                 
                 <Button type="submit" className="w-full mt-2" onClick={()=> register("value")} disabled={!username || !email || !password}>
