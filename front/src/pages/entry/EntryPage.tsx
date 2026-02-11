@@ -17,6 +17,7 @@ import reglight from '@/assets/media/reglight.svg'
 
 // function
 import { useState } from 'react'
+import { useNavigate } from 'react-router'
 
 // types
 type ViewMode = 'initial' | 'login' | 'register'
@@ -28,6 +29,12 @@ function Entry() {
     
     // view mode state
     const [viewMode, setViewMode] = useState<ViewMode>('initial')
+
+    const nav = useNavigate()
+
+    const guestNav: any = () => {
+        nav("/home")
+    }
 
     const renderContent = () => {
         switch (viewMode) {
@@ -62,6 +69,7 @@ function Entry() {
                                     type='button' 
                                     variant='link' 
                                     className='opacity-35 text-1xs'
+                                    onClick={guestNav}
                                 >
                                     Continue as guest
                                 </Button>

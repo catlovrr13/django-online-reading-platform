@@ -1,7 +1,12 @@
+// components
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Header2 } from '@/components/custom-components/headers'
+
+// function
+import { useState, useEffect } from 'react'
+
 
 interface LoginFormProps {
     onSwitchToRegister: () => void
@@ -10,9 +15,23 @@ interface LoginFormProps {
 function LoginForm({ onSwitchToRegister }: LoginFormProps) {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        // Handle login logic here
+        // login logic dito
         console.log('Login submitted')
     }
+
+    const [email, setEmail] = useState<string>("")
+    const [password, setPassword] = useState<string>("")
+    const [hidden, setHidden] = useState<boolean>(true)
+
+    const reset = () => {
+        setEmail("")
+        setPassword("")
+    }
+
+    useEffect(() => {
+    console.log("on state change")
+    setHidden(email || password ? false : true)
+    }, [email, password])
 
     return (
         <div className="w-full flex flex-col gap-6">
@@ -29,8 +48,10 @@ function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                     <Input 
                         id="email" 
                         type="email" 
+                        value={email}
                         placeholder="your@email.com"
                         required
+                        onChange={e => setEmail(e.target.value)}
                     />
                 </div>
                 
@@ -39,13 +60,18 @@ function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                     <Input 
                         id="password" 
                         type="password" 
+                        value={password}
                         placeholder="••••••••"
                         required
+                        onChange={e => setPassword(e.target.value)}
                     />
                 </div>
                 
-                <Button type="submit" className="w-full mt-2">
+                <Button type="submit" className="w-full mt-2" disabled={!email && !password}>
                     Log In
+                </Button>
+                <Button variant="ghost" type='button' className={hidden ? 'hidden' : 'w-full'} onClick={reset}>
+                    Reset
                 </Button>
                 
                 <div className="flex flex-col gap-2 items-center mt-2">

@@ -1,7 +1,14 @@
+// components
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Header2 } from '@/components/custom-components/headers'
+import { toast } from 'sonner'
+
+
+// function
+import { useState, useEffect } from 'react'
+
 
 interface RegisterFormProps {
     onSwitchToLogin: () => void
@@ -10,9 +17,44 @@ interface RegisterFormProps {
 function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        // Handle register logic here
+        
+        
         console.log('Register submitted')
     }
+
+    const register = (getValue?: string) => {
+        // const formData = {
+        //     username: username,
+        //     password: password,
+        //     email: email
+        // }
+
+        // if (username && email && password) {
+        //     loginMutate.mutate({data: formData})
+        // }
+
+        if (password !== confirm) {
+            toast.warning("Password does not match", {position: "bottom-center"})
+        }
+    }
+
+    const [username, setUsername] = useState<string>("")
+    const [email, setEmail] = useState<string>("")
+    const [password, setPassword] = useState<string>("")
+    const [confirm, setConfirm] = useState<string>("")
+    const [hidden, setHidden] = useState<boolean>(true)
+
+
+    const reset = () => {
+        setEmail("")
+        setPassword("")
+        setUsername("")
+        setConfirm("")
+    }
+
+    useEffect(() => {
+    setHidden(email || password || username ? false : true)
+    }, [email, password, username])
 
     return (
         <div className="w-full flex flex-col gap-6">
@@ -29,8 +71,10 @@ function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                     <Input 
                         id="register-username" 
                         type="text" 
+                        value={username}
                         placeholder="Choose a username"
                         required
+                        onChange={e => setUsername(e.target.value)}
                     />
                 </div>
                 
@@ -39,8 +83,10 @@ function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                     <Input 
                         id="register-email" 
                         type="email" 
+                        value={email}
                         placeholder="your@email.com"
                         required
+                        onChange={e => setEmail(e.target.value)}
                     />
                 </div>
                 
@@ -49,8 +95,10 @@ function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                     <Input 
                         id="register-password" 
                         type="password" 
+                        value={password}
                         placeholder="Create a strong password"
                         required
+                        onChange={e => setPassword(e.target.value)}
                     />
                 </div>
                 
@@ -59,13 +107,18 @@ function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                     <Input 
                         id="confirm-password" 
                         type="password" 
+                        value={confirm}
                         placeholder="Confirm your password"
                         required
+                        onChange={e => setConfirm(e.target.value)}
                     />
                 </div>
                 
-                <Button type="submit" className="w-full mt-2">
+                <Button type="submit" className="w-full mt-2" onClick={()=> register("value")} disabled={!username || !email || !password}>
                     Create Account
+                </Button>
+                <Button variant="ghost" type='button' className={hidden ? 'hidden' : 'w-full'} onClick={reset}>
+                    Reset
                 </Button>
                 
                 <div className="flex items-center justify-center gap-2 text-sm mt-2">
