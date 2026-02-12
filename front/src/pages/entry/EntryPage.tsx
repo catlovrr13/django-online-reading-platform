@@ -32,7 +32,7 @@ function Entry() {
 
     const nav = useNavigate()
     const guestNav: any = () => {
-        nav("/home")
+        nav("/dashboard")
     }
 
     const renderContent = () => {
