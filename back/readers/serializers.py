@@ -37,7 +37,7 @@ class ChapterSerializer(serializers.ModelSerializer):
 class BookRatingSerializer(serializers.ModelSerializer):
     book_id = serializers.IntegerField(source='book.id', read_only=True)
     book_title = serializers.CharField(source='book.title', read_only=True)
-    user_username = serializers.CharField(source='user.username', read_only=True)
+    user_username = serializers.CharField(source='user.user.username', read_only=True)
 
     class Meta:
         model = BookRating

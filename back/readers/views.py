@@ -337,7 +337,30 @@ class BookRatingCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         book_id = self.kwargs['book_id']
         book = get_object_or_404(Book, pk=book_id)
-        serializer.save(user=self.request.user, book=book)
+        
+        if BookRating.objects.filter(user=self.request.user.userprofile, book=book).exists():
+            from rest_framework.exceptions import ValidationError
+            raise ValidationError({'detail': 'You have already rated this book.'})
+        
+        serializer.save(user=self.request.user.userprofile, book=book)
+        
+class BookRatingUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = BookRatingSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        book_id = self.kwargs['book_id']
+        return BookRating.objects.filter(
+            book_id=book_id,
+            user=self.request.user.userprofile
+        )
+    
+    def get_object(self):
+        obj = super().get_object()
+        if obj.user != self.request.user.userprofile:
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("You don't have permission to modify this rating.")
+        return obj
 
 class BookRatingListView(generics.ListAPIView):
     """
@@ -369,10 +392,9 @@ class BookRatingDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return get_object_or_404(
-            BookRating,
-            pk=self.kwargs['rating_id'],
-            book_id=self.kwargs['book_id']
+        return BookRating.objects.filter(
+            book_id=self.kwargs['book_id'],
+            user=self.request.user.userprofile
         )
 
 class HistoryListView(generics.RetrieveUpdateAPIView): # this is for a specific book

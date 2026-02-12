@@ -50,8 +50,11 @@ urlpatterns = [
     path('api/book/<int:book_id>/chapters/', AllChaptersView.as_view(), name='all-chapters'),
 
     path('books/<int:book_id>/ratings/', BookRatingListView.as_view(), name='book-ratings-list'),
-    path('books/<int:book_id>/ratings/create/', BookRatingCreateView.as_view(), name='book-rating-create'),
     path('books/<int:book_id>/ratings/<int:pk>/', BookRatingDetailView.as_view(), name='book-rating-detail'),
+    
+    # should be authenticated to create, update or delete ratings
+    path('api/books/<int:book_id>/ratings/create/', BookRatingCreateView.as_view(), name='book-rating-create'),
+    path('api/books/<int:book_id>/ratings/<int:pk>/', BookRatingUpdateDeleteView.as_view(), name='book-rating-detail'),
 
     # library & history
     path('api/me/library/', LibraryDetailView.as_view(), name='library-view'),
