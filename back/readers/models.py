@@ -170,6 +170,12 @@ class History(models.Model):
         ordering = ['-last_read_at']
         verbose_name = 'History'
         verbose_name_plural = 'Histories'
+        indexes = [
+            models.Index(fields=['-last_read_at']), 
+        ]
     
     def __str__(self):
-        return f"{self.user.user.username} - {self.book.title}: {self.progress}%"
+        try:
+            return f"{self.user.user.username} - {self.book.title}: {self.progress}%"
+        except AttributeError:
+            return f"History #{self.id}"

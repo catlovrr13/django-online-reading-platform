@@ -9,7 +9,6 @@ from .filters import BookPageNumberPagination, ChapterPageNumberPagination, Rati
 from .permissions import CanAccessChapter
 from rest_framework.exceptions import NotFound
 from .ollama_extractor import OllamaExtractor
-# from .pollinations_generator import PollinationsGenerator
 from .image_generator import ImageGenerator
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import generics, status
@@ -397,23 +396,23 @@ class BookRatingDetailView(generics.RetrieveUpdateDestroyAPIView):
             user=self.request.user.userprofile
         )
 
-class HistoryListView(generics.RetrieveUpdateAPIView): # this is for a specific book
+class BookHistoryView(generics.RetrieveUpdateAPIView):  
     serializer_class = HistorySerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
-        obj = History.objects.filter(
+        obj, created = History.objects.get_or_create(
             book_id=self.kwargs['book_id'],
-            user__user=self.request.user
-        ).first()
-
-        if obj is None:
-            obj = History.objects.create(
-                book_id=self.kwargs['book_id'],
-                user=self.request.user.userprofile, 
-                progress=0.0
-            )
+            user=self.request.user.userprofile,
+            defaults={'progress': 0.0}
+        )
         return obj
+    
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.save(update_fields=['last_read_at'])
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
     
 class LibraryDetailView(generics.ListAPIView): # whole library for the user
     serializer_class = BookInLibrarySerializer

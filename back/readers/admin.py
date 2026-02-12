@@ -4,12 +4,10 @@ from django.utils.html import format_html
 from django.conf import settings
 from .models import Book, Chapter, BookRating, History, Library
 from .ollama_extractor import OllamaExtractor
-# from .pollinations_generator import PollinationsGenerator
 from .image_generator import ImageGenerator
 
 admin.site.register(BookRating)
 admin.site.register(History)
-# admin.site.register(Genre)
 admin.site.register(Library)
 
 class ChapterInline(admin.TabularInline):

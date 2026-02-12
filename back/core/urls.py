@@ -61,7 +61,7 @@ urlpatterns = [
     path('api/me/library/add/<int:book_id>/', AddBookToLibraryView.as_view(), name='library-add-book'),
     path('api/me/library/remove/<int:book_id>/', RemoveBookFromLibraryView.as_view(), name='library-remove-book'),
     
-    path('api/books/<int:book_id>/history/', HistoryListView.as_view(), name='history'),
+    path('api/books/history/<int:book_id>/', BookHistoryView.as_view(), name='history'),
 
     # subscription management
     path('api/subscribe/', SubscribeToPremiumView.as_view(), name='subscribe-to-premium'),
