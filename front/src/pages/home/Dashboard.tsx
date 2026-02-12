@@ -10,7 +10,7 @@ function Dashboard() {
 
     return (
         <>
-            <div className="flex flex-col items-center justify-center h-s">
+            <div className="flex flex-col items-center justify-center h-80">
             <h1>dashboard</h1>
             </div>
         </>
