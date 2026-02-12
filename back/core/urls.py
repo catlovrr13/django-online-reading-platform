@@ -55,6 +55,9 @@ urlpatterns = [
 
     # library & history
     path('api/me/library/', LibraryDetailView.as_view(), name='library-view'),
+    path('api/me/library/add/<int:book_id>/', AddBookToLibraryView.as_view(), name='library-add-book'),
+    path('api/me/library/remove/<int:book_id>/', RemoveBookFromLibraryView.as_view(), name='library-remove-book'),
+    
     path('api/books/<int:book_id>/history/', HistoryListView.as_view(), name='history'),
 
     # subscription management

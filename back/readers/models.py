@@ -1,9 +1,17 @@
 from django.db import models
 from django.core.validators import FileExtensionValidator, MinValueValidator, MaxValueValidator
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from purchasers.models import UserProfile
 
 
 # Create your models here.
-class Genre(models.Model):
+class Book(models.Model):
+    ACCESSIBILITY_CHOICES = [
+    ('free', 'Free'),
+    ('premium', 'Premium'),
+    ]
+    
     GENRE_CHOICES = [
         ('fiction', 'Fiction'),
         ('non_fiction', 'Non-Fiction'),
@@ -18,17 +26,7 @@ class Genre(models.Model):
         ('other', 'Other'),
     ]
     
-    genre = models.CharField(choices=GENRE_CHOICES, unique=True)
-    
-    def __str__(self):
-        return self.get_genre_display()
-    
-
-class Book(models.Model):
-    ACCESSIBILITY_CHOICES = [
-    ('free', 'Free'),
-    ('premium', 'Premium'),
-    ]
+    genre = models.CharField(choices=GENRE_CHOICES, default='other')
     
     file = models.FileField(
         upload_to='readers/files/',
@@ -43,9 +41,7 @@ class Book(models.Model):
     description = models.TextField(blank=True)
     language = models.CharField(max_length=50, default='English')
     
-    genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
-    
-    accessibility = models.CharField(max_length=20, choices=ACCESSIBILITY_CHOICES, default='premium')
+    accessibility = models.CharField(choices=ACCESSIBILITY_CHOICES, default='premium')
     
     cover_image = models.ImageField(
         upload_to='readers/covers/',
@@ -79,7 +75,7 @@ class Book(models.Model):
         ordering = ['-created_at']
     
 class Library(models.Model):
-    user = models.OneToOneField(
+    user = models.ForeignKey(
         'purchasers.UserProfile',
         on_delete=models.CASCADE,
         related_name='library'
@@ -96,6 +92,12 @@ class Library(models.Model):
     
     def __str__(self):
         return f"{self.user.user.username}'s Library"
+
+# creates a librry for a user when its created
+@receiver(post_save, sender=UserProfile)
+def create_user_library(sender, instance, created, **kwargs):
+    if created:
+        Library.objects.create(user=instance)
 
 class Chapter(models.Model):
     book = models.ForeignKey(
@@ -120,7 +122,6 @@ class Chapter(models.Model):
     def __str__(self):
         return f"Ch. {self.chapter_number}: {self.title}"
     
-# Added Book Ratings function - Pozon
 class BookRating(models.Model):          
     book = models.ForeignKey(
         Book,

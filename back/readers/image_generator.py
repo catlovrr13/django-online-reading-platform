@@ -4,20 +4,17 @@ from PIL import Image
 from typing import Dict, Optional, Tuple
 from django.conf import settings
 from django.core.files.base import ContentFile
-import urllib.parse
 import time
+from io import BytesIO
 
-
-class PollinationsGenerator:
+class ImageGenerator:
     
     def __init__(self, ollama_url: str = None, ollama_model: str = None):
         self.ollama_url = ollama_url or getattr(settings, 'OLLAMA_URL', 'http://localhost:11434')
         self.ollama_model = ollama_model or getattr(settings, 'OLLAMA_MODEL', 'qwen2.5:3b')
         self.ollama_api = f"{self.ollama_url}/api/generate"
         
-        self.pollinations_url = "https://image.pollinations.ai/prompt/"
-        
-        print("\nImage Generator initialized")
+        self.hf_token = getattr(settings, 'HUGGINGFACE_TOKEN', None)
     
     def _call_ollama(self, prompt: str, max_tokens: int = 200) -> str:
         try:
@@ -29,7 +26,7 @@ class PollinationsGenerator:
                     "stream": False,
                     "options": {
                         "num_predict": max_tokens,
-                        "temperature": 0.8,  # More creative for image descriptions
+                        "temperature": 0.8,
                     }
                 },
                 timeout=60
@@ -50,22 +47,22 @@ class PollinationsGenerator:
         
         ollama_prompt = f"""Create a visual description for an AI image generator to make a book cover.
 
-    Book: {book_metadata.get('title', 'Unknown')}
-    Author: {book_metadata.get('author', 'Unknown')}
-    Genre: {book_metadata.get('genre', 'Fiction')}
-    Summary: {book_metadata.get('description', '')[:200]}
+Book: {book_metadata.get('title', 'Unknown')}
+Author: {book_metadata.get('author', 'Unknown')}
+Genre: {book_metadata.get('genre', 'Fiction')}
+Summary: {book_metadata.get('description', '')[:200]}
 
-    Write ONLY a visual description (2-3 sentences) for the image. Do NOT include:
-    - Instructions like "Insert" or "Create"
-    - The book title or author name (no text in image)
-    - Any bracketed notes or explanations
-    - Phrases like "I hope this meets your requirements"
+Write ONLY a visual description (2-3 sentences) for the image. Do NOT include:
+- Instructions like "Insert" or "Create"
+- The book title or author name (no text in image)
+- Any bracketed notes or explanations
+- Phrases like "I hope this meets your requirements"
 
-    Just describe what should be visible in the image.
+Just describe what should be visible in the image.
 
-    Example good response: "A misty forest at twilight with ancient oak trees and ethereal fog, mysterious shadows dancing between moonlit branches, dark fantasy atmosphere with Gothic elements, professional book cover art style"
+Example good response: "A misty forest at twilight with ancient oak trees and ethereal fog, mysterious shadows dancing between moonlit branches, dark fantasy atmosphere with Gothic elements, professional book cover art style"
 
-    Your visual description:"""
+Your visual description:"""
 
         try:
             ai_prompt = self._call_ollama(ollama_prompt, max_tokens=200)
@@ -235,48 +232,72 @@ class PollinationsGenerator:
         print(f"Using title-based prompt")
         return fallback_prompt
     
-    def generate_image_pollinations( self,  prompt: str,  width: int = 512,  height: int = 768, model: str = "flux", retries: int = 2) -> Optional[bytes]:
+    def generate_image_huggingface(
+        self,
+        prompt: str,
+        width: int = 1024,
+        height: int = 1024,
+        retries: int = 3
+        ) -> Optional[bytes]:
+        """Last attempt at free Hugging Face"""
+        print(f"Generating with Hugging Face")
 
-        encoded_prompt = urllib.parse.quote(prompt)
-        
-        image_url = (
-            f"{self.pollinations_url}{encoded_prompt}"
-            f"?width={width}&height={height}&model={model}&nologo=true&enhance=true"
-        )
-        
-        print("\nGenerating image with Pollinations.ai")
-        
-        for attempt in range(retries):
+        if not self.hf_token:
+            raise Exception("HUGGINGFACE_TOKEN not found")
+
+        models = [
+        "stabilityai/stable-diffusion-2-1",
+        "runwayml/stable-diffusion-v1-5",
+        "CompVis/stable-diffusion-v1-4"
+        ]
+
+        for model in models:
             try:
-                response = requests.get(image_url, timeout=30)
-                
+                print(f"Trying model: {model}")
+
+                url = f"https://router.huggingface.co/models/{model}"
+
+                headers = {"Authorization": f"Bearer {self.hf_token}"}
+
+                response = requests.post(
+                    url,
+                    headers=headers,
+                    json={"inputs": prompt},
+                    timeout=120
+                )
+
                 if response.status_code == 200:
-                    content_type = response.headers.get('content-type', '')
-                    
-                    if 'image' in content_type:
-                        print(f"Image generated successfully ({len(response.content)} bytes)")
+                    try:
+                        Image.open(BytesIO(response.content))
+                        print(f"✓ Success with {model}")
                         return response.content
-                    else:
-                        print(f"Response was not an image: {content_type}")
-                else:
-                    print(f"HTTP {response.status_code}")
-                
-                if attempt < retries - 1:
-                    wait_time = (attempt + 1) * 2
-                    print(f"Retrying in {wait_time} seconds")
-                    time.sleep(wait_time)
+                    except:
+                        continue
+
+                elif response.status_code == 503:
+                    print("Model loading, waiting 30s...")
+                    time.sleep(30)
                     
-            except requests.exceptions.Timeout:
-                print(f"Request timed out (attempt {attempt + 1}/{retries})")
-                if attempt < retries - 1:
-                    time.sleep(3)
+                    response = requests.post(
+                        url,
+                        headers=headers,
+                        json={"inputs": prompt},
+                        timeout=120
+                    )
+                    
+                    if response.status_code == 200:
+                        try:
+                            Image.open(BytesIO(response.content))
+                            print(f"✓ Success with {model}")
+                            return response.content
+                        except:
+                            continue
+
             except Exception as e:
-                print(f"Error: {e}")
-                if attempt < retries - 1:
-                    time.sleep(2)
-        
-        print("Failed to generate image after all retries")
-        return None
+                print(f"Failed with {model}: {e}")
+            continue
+
+        raise Exception("All Hugging Face models failed")
     
     def process_and_save_image(self, image_bytes: bytes, target_size: Tuple[int, int]) -> ContentFile:
         print(f"\nProcessing image to size {target_size}\n")
@@ -319,15 +340,17 @@ class PollinationsGenerator:
         print("\nGENERATING BOOK COVER\n")
         
         prompt = self.generate_cover_prompt(book_metadata)
-        
+        print(f"Generated prompt: {prompt[:100]}...")
+    
         if not prompt:
-            return None, "Failed to generate prompt"
+            raise Exception("Failed to generate prompt")
         
-        image_bytes = self.generate_image_pollinations(
-            prompt,
-            width=512,
-            height=768,
-            model="flux"
+        # Using Hugging Face FLUX (FREE)
+        image_bytes = self.generate_image_huggingface(
+            prompt, 
+            width=800,
+            height=1200,
+            # model="black-forest-labs/FLUX.1-schnell"
         )
         
         if not image_bytes:
@@ -356,11 +379,12 @@ class PollinationsGenerator:
         if not prompt:
             return None, "Failed to generate prompt"
         
-        image_bytes = self.generate_image_pollinations(
+        # Using Hugging Face FLUX (FREE)
+        image_bytes = self.generate_image_huggingface(
             prompt,
-            width=512,
-            height=768,
-            model="turbo"
+            width=800,
+            height=1200,
+            # model="black-forest-labs/FLUX.1-schnell"
         )
         
         if not image_bytes:
@@ -378,7 +402,7 @@ class PollinationsGenerator:
             print(f"Error processing chapter image: {e}")
             return None, prompt
 
-    def generate_all_images(self, book_metadata: Dict, chapters: list,max_chapters: int = 20) -> Dict:
+    def generate_all_images(self, book_metadata: Dict, chapters: list, max_chapters: int = 20) -> Dict:
         print("\nBATCH IMAGE GENERATION\n")
         
         results = {
@@ -392,7 +416,7 @@ class PollinationsGenerator:
         print("\nChapter Illustrations")
         chapters_to_process = chapters[:max_chapters]
         
-        for i, chapter in enumerate(chapters_to_process, 1): # progress bar
+        for i, chapter in enumerate(chapters_to_process, 1):
             print(f"\n[{i}/{len(chapters_to_process)}]")
             
             chapter_result = self.generate_chapter_illustration(

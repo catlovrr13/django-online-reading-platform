@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Book, Chapter, BookRating, History, Library, Genre
+from .models import Book, Chapter, BookRating, History, Library
 
 class BookSerializer(serializers.ModelSerializer):
 
@@ -33,8 +33,7 @@ class ChapterSerializer(serializers.ModelSerializer):
             'summary',
             'illustration'
         ]
-
-#Booking Rating Serializer - Pozon
+        
 class BookRatingSerializer(serializers.ModelSerializer):
     book_id = serializers.IntegerField(source='book.id', read_only=True)
     book_title = serializers.CharField(source='book.title', read_only=True)
@@ -58,23 +57,43 @@ class HistorySerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'last_read_at', 'book']   
         extra_kwargs = {'progress': {'required': False}}
         
-class LibrarySerializer(serializers.ModelSerializer):
-    title = serializers.CharField(source='book.title')
-    author = serializers.CharField(source='book.author')
+class BookInLibrarySerializer(serializers.ModelSerializer):
     cover_url = serializers.SerializerMethodField()
 
     class Meta:
-        model = Library
-        fields = ['id', 'book', 'title', 'author', 'cover_url', 'added_at']
+        model = Book
+        fields = ['id', 'title', 'author', 'genre', 'description', 'language', 'accessibility', 'cover_url', 'created_at']
 
     def get_cover_url(self, obj):
-        if obj.book.cover:
-            return obj.book.cover.url
+        if obj.cover_image:
+            return obj.cover_image.url
         return None
-    
-class GenreSerializer(serializers.Serializer):
-    name = serializers.CharField(max_length=100)
-    
+
+
+class LibrarySerializer(serializers.ModelSerializer):
+    books = BookInLibrarySerializer(many=True, read_only=True)
+
     class Meta:
-        model = Genre
-        fields = ['id', 'name']
+        model = Library
+        fields = ['id', 'books']
+
+# class LibrarySerializer(serializers.ModelSerializer):
+#     title = serializers.CharField(source='book.title')
+#     author = serializers.CharField(source='book.author')
+#     cover_url = serializers.SerializerMethodField()
+
+#     class Meta:
+#         model = Library
+#         fields = ['id', 'book', 'title', 'author', 'cover_url', 'added_at']
+
+#     def get_cover_url(self, obj):
+#         if obj.book.cover:
+#             return obj.book.cover.url
+#         return None
+    
+# class GenreSerializer(serializers.Serializer):
+#     name = serializers.CharField(max_length=100)
+    
+#     class Meta:
+#         model = Genre
+#         fields = ['id', 'name']
