@@ -122,7 +122,6 @@ class Chapter(models.Model):
     def __str__(self):
         return f"Ch. {self.chapter_number}: {self.title}"
     
-# Added Book Ratings function - Pozon
 class BookRating(models.Model):          
     book = models.ForeignKey(
         Book,

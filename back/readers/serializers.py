@@ -33,8 +33,7 @@ class ChapterSerializer(serializers.ModelSerializer):
             'summary',
             'illustration'
         ]
-
-#Booking Rating Serializer - Pozon
+        
 class BookRatingSerializer(serializers.ModelSerializer):
     book_id = serializers.IntegerField(source='book.id', read_only=True)
     book_title = serializers.CharField(source='book.title', read_only=True)
