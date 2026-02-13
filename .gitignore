@@ -11,7 +11,7 @@ db.sqlite3
 db.sqlite3-journal
 
 # Media & Static (optional: ignore collected static files)
-media/
+/back/media/
 staticfiles/
 static/
 
