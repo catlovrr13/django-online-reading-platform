@@ -17,7 +17,7 @@
 // export default entryRouter
 
 import dashLayout from "@/components/layouts/DashboardLayout";
-import Dashboard from "@/pages/home/Dashboard";
+import Dashboard from "@/pages/main/Dashboard";
 
 const dashRouter = [
     {
