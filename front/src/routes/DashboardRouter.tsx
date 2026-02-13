@@ -21,7 +21,7 @@ import Dashboard from "@/pages/home/Dashboard";
 
 const dashRouter = [
     {
-        path: '/home',
+        path: '/dashboard',
         Component: dashLayout,
         children: [
             {

@@ -3,14 +3,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Header2 } from '@/components/custom-components/headers'
-import { toast } from 'sonner'
+// import { toast } from 'sonner'
 import {
     InputGroup,
     InputGroupAddon,
     InputGroupButton,
-    InputGroupInput,
-    InputGroupText,
-    InputGroupTextarea,
+    InputGroupInput
 } from "@/components/ui/input-group"
 
 // media

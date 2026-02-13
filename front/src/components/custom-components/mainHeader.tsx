@@ -27,7 +27,7 @@ const StickyHeader = () => {
 
     return (
         <header className={`sticky top-0 z-50 ${headerColor} shadow-md w-full`}>
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto px-4 sm:px-6 lg:px-8">
                 <nav className="flex items-center justify-between h-16">
                 {/* logo */}
                 <img 
@@ -36,9 +36,6 @@ const StickyHeader = () => {
                     className="h-25 w-33 object-cover"/>
                 {/* menu buttons */}
                 <div className="flex items-center content-center space-x-2 h-7">
-                    {/* <a href="#home" className="text-gray-600 hover:text-gray-900">Home</a>
-                    <a href="#about" className="text-gray-600 hover:text-gray-900">About</a>
-                    <a href="#contact" className="text-gray-600 hover:text-gray-900">Contact</a> */}
                     <Tabs defaultValue="overview">
                         <TabsList variant="line">
                             <TabsTrigger value="overview" >Home</TabsTrigger>
@@ -51,8 +48,8 @@ const StickyHeader = () => {
                     <Separator orientation="vertical" className=''/>
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Button variant={'ghost'} className=''>
-                                <Search/>
+                            <Button variant={'ghost'} size={'icon'}>
+                                <Search strokeWidth={2.4}/>
                             </Button>
                         </PopoverTrigger>
                         <PopoverContent className='p-0 w-max' align='end' sideOffset={30}>
