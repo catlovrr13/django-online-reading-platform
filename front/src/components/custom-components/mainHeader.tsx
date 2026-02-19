@@ -55,7 +55,7 @@ const StickyHeader = () => {
                                     <Search strokeWidth={2.4}/>
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className='p-0 w-max' align='end' sideOffset={30}>
+                            <PopoverContent className='p-0 w-max' align='end' sideOffset={25}>
                                 <InputGroup className='w-75'>
                                     <InputGroupAddon align={'inline-start'}>
                                         <Search/>
@@ -75,7 +75,7 @@ const StickyHeader = () => {
                                     <Search strokeWidth={2.4}/>
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className='p-0 w-64' align='end' sideOffset={10}>
+                            <PopoverContent className='p-0 w-64' align='center' sideOffset={25}>
                                 <InputGroup className='w-full'>
                                     <InputGroupAddon align={'inline-start'}>
                                         <Search/>

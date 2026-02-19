@@ -85,7 +85,7 @@ const Footer7 = ({
   className,
 }: Footer7Props) => {
   return (
-    <section className={cn("py-10", className)}>
+    <section className={cn("py-10 m-6", className)}>
       <div className="container">
         <div className="flex w-full flex-col justify-between gap-10 lg:flex-row lg:items-start lg:text-left">
           <div className="flex w-full flex-col justify-between gap-6 lg:items-start">

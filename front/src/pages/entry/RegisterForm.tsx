@@ -25,25 +25,15 @@ interface RegisterFormProps {
 function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        
-        
-        console.log('Register submitted')
+        register()
     }
 
-    const register = (getValue?: string) => {
-        // const formData = {
-        //     username: username,
-        //     password: password,
-        //     email: email
-        // }
-
-        // if (username && email && password) {
-        //     loginMutate.mutate({data: formData})
-        // }
-
+    const register = () => {
         if (password !== confirm) {
             toast.warning("Password does not match", {position: "bottom-center"})
+            return
         }
+        console.log('Register submitted')
     }
 
     const [username, setUsername] = useState<string>("")
@@ -134,7 +124,9 @@ function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                     </InputGroup>
                 </div>
                 
-                <Button type="submit" className="w-full mt-2" onClick={()=> register("value")} disabled={!username || !email || !password}>
+                <Button type="submit" className="w-full mt-2" 
+                // onClick={()=> register("value")} 
+                disabled={!username || !email || !password}>
                     Create Account
                 </Button>
                 <Button variant="ghost" type='button' className={hidden ? 'hidden' : 'w-full'} onClick={reset}>

@@ -57,13 +57,13 @@ function Entry() {
                                 >
                                     Log in
                                 </Button>
-                                <Button 
+                                {/* <Button 
                                     type='button' 
                                     className='w-25'
                                     onClick={() => setViewMode('register')}
                                 >
                                     Register
-                                </Button>
+                                </Button> */}
                                 <Button 
                                     type='button' 
                                     variant='link' 
