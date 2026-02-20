@@ -57,13 +57,6 @@ function Entry() {
                                 >
                                     Log in
                                 </Button>
-                                {/* <Button 
-                                    type='button' 
-                                    className='w-25'
-                                    onClick={() => setViewMode('register')}
-                                >
-                                    Register
-                                </Button> */}
                                 <Button 
                                     type='button' 
                                     variant='link' 
@@ -93,7 +86,7 @@ function Entry() {
             </div>
             <Card className="w-full">
                 <CardContent className="flex flex-col sm:flex-row h-full items-center gap-4 justify-center p-6">
-                    {viewMode !== 'initial' && (
+                    {/* {viewMode !== 'initial' && (
                         <>
                             <div className="w-full flex flex-col justify-center items-center p-5">
                                 <img 
@@ -113,13 +106,22 @@ function Entry() {
                             <Separator orientation="vertical" className="hidden sm:block h-96"/>
                             <Separator orientation="horizontal" className="block sm:hidden w-full"/>
                         </>
-                    )}
+                    )} */}
                     {viewMode === 'initial' ? (
                         renderContent()
                     ) : (
-                        <div className="w-full flex flex-col justify-center p-5">
+                        <div className="w-full flex flex-col justify-center p-5 gap-1">
                             {renderContent()}
+                            <Button 
+                                    type='button' 
+                                    variant='link' 
+                                    className='opacity-35 font-light'
+                                    onClick={guestNav}
+                                >
+                                    Continue as guest
+                                </Button>
                         </div>
+                        
                     )}
                 </CardContent>
             </Card>

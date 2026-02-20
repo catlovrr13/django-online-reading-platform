@@ -19,19 +19,20 @@ import { useSidebar } from "@/components/ui/sidebar"
 
 import { useTheme } from '@/components/theme-provider'
 import { ThemeToggle } from "../theme-toggle"
+import { useState } from "react"
 
 export function SiteHeader() {
-  const { toggleSidebar } = useSidebar()
+  const { toggleSidebar, state } = useSidebar()
+  const isSidebarOpen = state === 'expanded'
 
   const { theme } = useTheme()
   const currentLogo = theme === 'dark' ? bmarklight : bmarkdark
-
 
   return (
     <header className="bg-background sticky top-0 z-50 flex w-full items-center border-b">
       <div className="flex h-(--header-height) w-full items-center gap-3 px-3">
         <Button
-          className="h-8 w-8"
+          className="h-8 w-8 hover:-translate-y-0.5"
           variant="ghost"
           size="icon"
           onClick={toggleSidebar}
@@ -39,7 +40,8 @@ export function SiteHeader() {
           <img
             src={currentLogo}
             alt='theonyxpub.'
-            className="h-7 w-10 object-cover"/>
+            className={`transition-transform duration-300 ease-in-out ${isSidebarOpen ? '-rotate-90' : ''}`}
+            />
         </Button>
         <Separator orientation="vertical" className="mr-2 h-4" />
         <Breadcrumb className="hidden sm:block">

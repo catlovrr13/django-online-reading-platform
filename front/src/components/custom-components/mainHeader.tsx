@@ -17,6 +17,7 @@ import { Separator } from '@/components/ui/separator'
 
 import { ThemeToggle } from '@/components/theme-toggle'
 import { useTheme } from '@/components/theme-provider'
+import { useSidebar } from '@/components/ui/sidebar'
 import { Search, Menu } from 'lucide-react'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -26,6 +27,8 @@ const StickyHeader = () => {
     const headerColor = theme === 'dark' ? 'bg-neutral-900' : 'bg-white'
     const currentLogo = theme === 'dark' ? longlight : longdark
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+    const { state } = useSidebar()
+    const isSidebarOpen = state === 'expanded'
 
     return (
         <header className={`sticky top-0 z-50 ${headerColor} shadow-md w-full`}>
@@ -35,7 +38,7 @@ const StickyHeader = () => {
                     <img
                         src={currentLogo}
                         alt='theonyxpub.'
-                        className="h-25 w-33 object-cover"/>
+                        className={`h-25 w-33 object-cover transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'rotate-90' : ''}`}/>
 
                     {/* desktop view */}
                     <div className="hidden md:flex items-center content-center space-x-2 h-7">

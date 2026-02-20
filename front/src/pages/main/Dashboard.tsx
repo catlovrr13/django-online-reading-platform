@@ -10,8 +10,13 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
+import { Header1, Header2, Header3 } from "@/components/custom-components/headers";
 
 // media
+import dDark from "@/assets/media/hero-d-dark.svg"
+import dLight from "@/assets/media/hero-d-light.svg"
+import mDark from "@/assets/media/hero-m-dark.svg"
+import mLight from "@/assets/media/hero-m-light.svg"
 
 // function
 import { useTheme } from "@/components/theme-provider";
@@ -24,20 +29,29 @@ export default function Page() {
     theme === "dark" ? `bg-stone-900 opacity-40` : `bg-stone-200 opacity-40`;
   const cardAd =
     theme === "dark" ? `bg-stone-100 opacity-10` : `bg-stone-900 opacity-20`;
+    const heroImage = theme === 'dark' ? dDark : dLight;
 
   return (
     <>
       <div className="flex flex-col gap-0 justify-center">
         {/* hero section */}
-        <div
-          className={`
-          // delete this \/ after finishing 
-          min-h-screen 
-          ${heroBG} p-10 flex flex-col md:flex-row`}
-        >
-          <div className="">welcome</div>
-          <div className="">pic here</div>
-        </div>
+          <div className="relative flex overflow-hidden rounded-b-[100px] mb-10 drop-shadow-lg dark:drop-shadow-stone-900 dark:drop-shadow-xl">
+            <div className="absolute z-10 flex flex-col md:flex-row p-10">
+              <div>
+                <Header1 text={"theonyxpub."} cl={'text-3xl md:text-5xl'}/>
+                <Header3 text={"hevccjsgdv"} />
+              </div>
+              <div>
+
+              </div>
+            </div>
+            <img
+              src={heroImage}
+              alt="hero"
+              className="w-full h-[90%] object-cover rounded-b-[100px] scale-[1.01]"
+            />
+          </div>
+
 
         {/* genre */}
         <div
