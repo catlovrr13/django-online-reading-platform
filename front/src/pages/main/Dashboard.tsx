@@ -37,11 +37,11 @@ export default function Page() {
 
   return (
     <>
-      <div className="flex flex-col gap-0 justify-center">
+      <div className="flex flex-col gap-10 justify-center">
         {/* hero section */}
           <div className="relative flex overflow-hidden rounded-b-[100px] mb-10 drop-shadow-lg dark:drop-shadow-stone-900 dark:drop-shadow-xl min-h-[400px] min-w-[400px]">
             {/* content */}
-            <div className="absolute z-10 flex flex-col md:flex-row p-10 gap-5 justify-evenly w-full h-full">
+            <div className="absolute z-10 flex flex-col md:flex-row p-15 gap-5 justify-evenly w-full h-full">
               <div className="flex-1 flex-col flex gap-5">
                 <Header1 text={"theonyxpub."} cl={'text-3xl md:text-5xl'}/>
                 <Header2 text={"this is an online reading platform haha"} cl={'font-light'}/>
@@ -87,7 +87,7 @@ export default function Page() {
                 delay: 2000,
               }),
             ]}
-            className="w-full max-w-[20rem] sm:max-w-xs md:max-w-sm "
+            className="w-full min-w-120 md:max-w-xs"
           >
             <CarouselContent>
               {Array.from({ length: 5 }).map((_, index) => (
@@ -104,8 +104,8 @@ export default function Page() {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
+            {/* <CarouselPrevious />
+            <CarouselNext /> */}
           </Carousel>
         </div>
 
