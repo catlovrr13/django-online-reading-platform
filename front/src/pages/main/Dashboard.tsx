@@ -1,13 +1,12 @@
 // components
 // import GridMotion from "@/components/GridMotion";
-import { Button } from "@/components/ui/button";
 import ScrollFloat from "@/components/ScrollFloat";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
+  // CarouselNext,
+  // CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
 import { Header1, Header2, Header3 } from "@/components/custom-components/headers";

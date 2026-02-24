@@ -1,4 +1,5 @@
 import Entry from '@/pages/entry/EntryPage'
+import Subscription from '@/pages/entry/Subscription'
 import entryLayout from '@/components/layouts/EntryLayout'
 
 const entryRouter = [
@@ -9,6 +10,10 @@ const entryRouter = [
             {
                 index: true,
                 Component: Entry
+            },
+            {
+                path: 'subscription',
+                Component: Subscription
             }
         ]
     }

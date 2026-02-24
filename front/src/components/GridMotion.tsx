@@ -1,4 +1,5 @@
-import { useEffect, useRef, FC, ReactNode } from 'react';
+import { useEffect, useRef } from 'react';
+import type { FC, ReactNode } from 'react';
 import { gsap } from 'gsap';
 import './GridMotion.css';
 

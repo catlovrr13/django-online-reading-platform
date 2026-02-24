@@ -50,6 +50,7 @@ function Entry() {
                                 alt='theonyxpub.' 
                                 className="h-25 w-33 object-cover mb-6"/>
                             <div className='w-full flex flex-col justify-center items-center p-5 gap-5'>
+                                {/* <a href='login'> */}
                                 <Button 
                                     type='button' 
                                     className='w-25'
@@ -57,6 +58,7 @@ function Entry() {
                                 >
                                     Log in
                                 </Button>
+                                {/* </a> */}
                                 <Button 
                                     type='button' 
                                     variant='link' 
@@ -82,7 +84,6 @@ function Entry() {
     return (
         <div className="w-full max-w-4xl px-4 sm:px-6 lg:px-8">
             <div className="absolute top-4 right-4">
-                <ThemeToggle />
             </div>
             <Card className="w-full">
                 <CardContent className="flex flex-col sm:flex-row h-full items-center gap-4 justify-center p-6">

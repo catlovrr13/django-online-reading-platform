@@ -12,7 +12,7 @@ class SubscriptionType(models.Model):
     ]
 
     MONTH = '30'
-    YEAR = '356'
+    YEAR = '365'
 
     SUBSCRIPTION_OPTION = [
         (MONTH, 'One Month'),
@@ -26,7 +26,7 @@ class SubscriptionType(models.Model):
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.name} - {self.duration_days}"
+        return f"{self.name}-{self.duration_days}"
 
     class Meta:
         verbose_name = "Subscription Type"

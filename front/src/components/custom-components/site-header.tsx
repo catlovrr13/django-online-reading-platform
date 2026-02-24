@@ -1,6 +1,5 @@
 "use client"
 
-import { SidebarIcon } from "lucide-react"
 import bmarkdark from "@/assets/media/bmarkdark.svg"
 import bmarklight from "@/assets/media/bmarklight.svg"
 
@@ -19,7 +18,6 @@ import { useSidebar } from "@/components/ui/sidebar"
 
 import { useTheme } from '@/components/theme-provider'
 import { ThemeToggle } from "../theme-toggle"
-import { useState } from "react"
 
 export function SiteHeader() {
   const { toggleSidebar, state } = useSidebar()

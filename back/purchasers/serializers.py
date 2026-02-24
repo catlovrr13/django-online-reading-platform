@@ -24,12 +24,15 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
+    first_name = serializers.CharField(source='user.first_name', read_only=True)
+    last_name = serializers.CharField(source='user.last_name', read_only=True)
+    email = serializers.EmailField(source='user.email', read_only=True)
     card_number = serializers.CharField(write_only=True, min_length=10, max_length=10)
     subscription_type = serializers.CharField(read_only=True)
 
     class Meta:
         model = UserProfile
-        fields = ['id', 'username', 'card_number', 'subscription_type', 'img']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'card_number', 'subscription_type', 'img']
 
     def validate_card_number(self, value):
         if not value.isdigit():

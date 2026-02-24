@@ -7,6 +7,7 @@ import { Provider } from 'react-redux'
 import { CookiesProvider } from 'react-cookie'
 import { store } from '@/hooks/redux/store'
 import { ThemeProvider } from './components/theme-provider'
+import { AuthRestore } from './components/AuthRestore'
 
 function App() {
 
@@ -16,8 +17,10 @@ function App() {
       <CookiesProvider>
         <Provider store={store}>
           <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-            <Toaster />
+            <AuthRestore>
+              <RouterProvider router={router} />
+              <Toaster />
+            </AuthRestore>
           </QueryClientProvider>
         </Provider>
       </CookiesProvider>
