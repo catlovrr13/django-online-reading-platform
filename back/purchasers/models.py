@@ -11,14 +11,22 @@ class SubscriptionType(models.Model):
         (PREMIUM, 'Premium Account'),
     ]
 
-    name = models.CharField(max_length=20, choices=SUBSCRIPTION_CHOICES, unique=True)
-    duration_days = models.PositiveIntegerField(default=0, help_text="Duration in days. Use 0 for free/lifetime plans.")
+    MONTH = '30'
+    YEAR = '356'
+
+    SUBSCRIPTION_OPTION = [
+        (MONTH, 'One Month'),
+        (YEAR, 'One Year')
+    ]
+
+    name = models.CharField(max_length=20, choices=SUBSCRIPTION_CHOICES)
+    duration_days = models.CharField(max_length=20, default='0', choices=SUBSCRIPTION_OPTION, help_text="Duration in days. Use 0 for free/lifetime plans.")
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     benefits = models.TextField(blank=True, help_text="Displayed to users (e.g., 'Read 2 chapters', 'Unlimited access')")
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.get_name_display()
+        return f"{self.name} - {self.duration_days}"
 
     class Meta:
         verbose_name = "Subscription Type"
