@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "online reading platform",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

@@ -11,7 +11,7 @@ db.sqlite3
 db.sqlite3-journal
 
 # Media & Static (optional: ignore collected static files)
-media/
+/back/media/
 staticfiles/
 static/
 
@@ -25,10 +25,6 @@ venv/
 *.env
 *.key
 
-# Migrations (optional, only ignore if you auto-generate migrations)
-# **Uncomment below if you don’t want to track migration files**
-# */migrations/*
-# !*/migrations/__init__.py
 
 # IDE & OS files
 .vscode/

@@ -2,13 +2,12 @@ from django.contrib import admin
 from django.contrib import messages
 from django.utils.html import format_html
 from django.conf import settings
-from .models import Book, Chapter, BookRating, History, Genre, Library
+from .models import Book, Chapter, BookRating, History, Library
 from .ollama_extractor import OllamaExtractor
-from .pollinations_generator import PollinationsGenerator
+from .image_generator import ImageGenerator
 
 admin.site.register(BookRating)
 admin.site.register(History)
-admin.site.register(Genre)
 admin.site.register(Library)
 
 class ChapterInline(admin.TabularInline):
@@ -204,11 +203,11 @@ class BookAdmin(admin.ModelAdmin):
         try:
             self.message_user(
                 request,
-                "Step 2/2: Generating images with Pollinations.ai",
+                "Step 2/2: Generating images with Gemini",
                 level=messages.INFO
             )
             
-            image_gen = PollinationsGenerator()
+            image_gen = ImageGenerator()
             
             self.message_user(request, "Generating book cover", level=messages.INFO)
             

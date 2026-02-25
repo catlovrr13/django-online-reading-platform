@@ -3,10 +3,13 @@ from .serializers import *
 from .models import Book, Chapter, BookRating, History
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.filters import SearchFilter, OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from django_filters import FilterSet, CharFilter, ChoiceFilter, NumberFilter
+from .filters import BookPageNumberPagination, ChapterPageNumberPagination, RatingPageNumberPagination, BookFilterSet
 from .permissions import CanAccessChapter
 from rest_framework.exceptions import NotFound
 from .ollama_extractor import OllamaExtractor
-from .pollinations_generator import PollinationsGenerator
+from .image_generator import ImageGenerator
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import generics, status
 from rest_framework.response import Response
@@ -14,7 +17,6 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 
-# Create your views here.
 class BookCreateView(generics.CreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
@@ -119,7 +121,7 @@ class BookCreateView(generics.CreateAPIView):
     
     def _generate_images(self, book, metadata):
         """Generate cover and chapter images"""
-        image_gen = PollinationsGenerator()
+        image_gen = ImageGenerator()
         
         cover_file, cover_prompt = image_gen.generate_book_cover({
             'title': metadata['title'],
@@ -242,10 +244,38 @@ class ChapterUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
         return chapter
 
 class BookListView(generics.ListAPIView):
+    """
+    List all books with filtering, search, ordering, and pagination.
+    
+    Query Parameters:
+    - search: Search by title, author (e.g., ?search=Harry)
+    - page: Page number (default: 1)
+    - page_size: Items per page (default: 12, max: 100)
+    - genre: Filter by genre (e.g., ?genre=fiction)
+    - accessibility: Filter by accessibility (free/premium)
+    - min_rating: Filter by minimum average rating (e.g., ?min_rating=3.5)
+    - language: Filter by language (e.g., ?language=English)
+    - is_processed: Filter by processing status (true/false)
+    - ordering: Order by field (e.g., ?ordering=-created_at, ?ordering=title)
+    
+    Available ordering fields:
+    - title, author, created_at, updated_at, average_rating
+    - Prefix with '-' for descending order
+    
+    Examples:
+    - /books/?search=harry&ordering=-created_at
+    - /books/?genre=fiction&accessibility=free&page_size=20
+    - /books/?min_rating=3.5&ordering=title
+    - /books/?language=English&page=2
+    """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    filter_backends = [SearchFilter, OrderingFilter]
-    search_fields = ['title', 'author__name', 'genre__name', 'accessibility']
+    filterset_class = BookFilterSet
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    search_fields = ['title', 'author', 'description']  # Fields to search in
+    ordering_fields = ['title', 'author', 'created_at', 'updated_at', '-created_at']  # Allowed ordering fields
+    ordering = ['-created_at']  # Default ordering
+    pagination_class = BookPageNumberPagination
     
 class BookDetailView(generics.RetrieveAPIView):
     queryset = Book.objects.all()
@@ -272,8 +302,25 @@ class ChapterDetailView(generics.RetrieveAPIView):
         return chapter
     
 class AllChaptersView(generics.ListAPIView):
+    """
+    List all chapters for a specific book with pagination and ordering.
+    
+    Query Parameters:
+    - page: Page number
+    - page_size: Items per page (default: 20)
+    - ordering: Order by chapter_number or title
+    
+    Examples:
+    - /api/book/1/chapters/
+    - /api/book/1/chapters/?page_size=50&ordering=chapter_number
+    """
     serializer_class = ChapterSerializer
     permission_classes = [IsAuthenticated, CanAccessChapter]
+    filter_backends = [SearchFilter, OrderingFilter]  # Add search and ordering filters
+    search_fields = ['title', 'summary']
+    ordering_fields = ['chapter_number', 'title']
+    ordering = ['chapter_number']  # Default: ascending chapter number
+    pagination_class = ChapterPageNumberPagination
 
     def get_queryset(self):
         book_id = self.kwargs['book_id']
@@ -281,7 +328,6 @@ class AllChaptersView(generics.ListAPIView):
         
         return self.filter_queryset(queryset)
     
-# Booking Rating Views - Pozon
 class BookRatingCreateView(generics.CreateAPIView):
     queryset = BookRating.objects.all()
     serializer_class = BookRatingSerializer
@@ -290,55 +336,134 @@ class BookRatingCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         book_id = self.kwargs['book_id']
         book = get_object_or_404(Book, pk=book_id)
-        serializer.save(user=self.request.user, book=book)
-
-class BookRatingListView(generics.ListAPIView):
+        
+        if BookRating.objects.filter(user=self.request.user.userprofile, book=book).exists():
+            from rest_framework.exceptions import ValidationError
+            raise ValidationError({'detail': 'You have already rated this book.'})
+        
+        serializer.save(user=self.request.user.userprofile, book=book)
+        
+class BookRatingUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = BookRatingSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         book_id = self.kwargs['book_id']
-        return BookRating.objects.filter(book_id=book_id)
+        return BookRating.objects.filter(
+            book_id=book_id,
+            user=self.request.user.userprofile
+        )
+    
+    def get_object(self):
+        obj = super().get_object()
+        if obj.user != self.request.user.userprofile:
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("You don't have permission to modify this rating.")
+        return obj
+
+class BookRatingListView(generics.ListAPIView):
+    """
+    List ratings for a specific book with filtering and ordering.
+    
+    Query Parameters:
+    - page: Page number
+    - page_size: Items per page (default: 10)
+    - ordering: Order by rating or created_at (e.g., ?ordering=-rating)
+    
+    Examples:
+    - /books/1/ratings/
+    - /books/1/ratings/?page_size=20&ordering=-rating
+    """
+    serializer_class = BookRatingSerializer
+    permission_classes = [IsAuthenticated]
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ['user__first_name', 'user__last_name']  # If you have review comments
+    ordering_fields = ['rating', 'created_at']
+    ordering = ['-rating']  # Default: highest ratings first
+    pagination_class = RatingPageNumberPagination
+
+    def get_queryset(self):
+        book_id = self.kwargs['book_id']
+        return BookRating.objects.filter(book_id=book_id).order_by('-rating')
     
 class BookRatingDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = BookRatingSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return get_object_or_404(
-            BookRating,
-            pk=self.kwargs['rating_id'],
-            book_id=self.kwargs['book_id']
+        return BookRating.objects.filter(
+            book_id=self.kwargs['book_id'],
+            user=self.request.user.userprofile
         )
 
-class HistoryListView(generics.RetrieveUpdateAPIView): # this is for a specific book
+class BookHistoryView(generics.RetrieveUpdateAPIView):  
     serializer_class = HistorySerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
-        obj = History.objects.filter(
+        obj, created = History.objects.get_or_create(
             book_id=self.kwargs['book_id'],
-            user__user=self.request.user
-        ).first()
-
-        if obj is None:
-            obj = History.objects.create(
-                book_id=self.kwargs['book_id'],
-                user=self.request.user.userprofile, 
-                progress=0.0
-            )
+            user=self.request.user.userprofile,
+            defaults={'progress': 0.0}
+        )
         return obj
     
-class LibraryDetailView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = LibrarySerializer
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.save(update_fields=['last_read_at'])
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+    
+class LibraryDetailView(generics.ListAPIView): # whole library for the user
+    serializer_class = BookInLibrarySerializer
     permission_classes = [IsAuthenticated]
     pagination_class = PageNumberPagination
     
-    def get_object(self):
-        book_id = self.kwargs['book_id']
-        obj = get_object_or_404(
-            Library,
-            book_id=book_id,
-            user__user=self.request.user
+    def get_queryset(self):
+        library, created = Library.objects.get_or_create(user=self.request.user.userprofile)
+        return library.books.all().order_by('-created_at')
+    
+class AddBookToLibraryView(generics.GenericAPIView): # add a book in library
+    serializer_class = LibrarySerializer
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, *args, **kwargs):
+        book_id = kwargs.get('book_id')
+        book = get_object_or_404(Book, pk=book_id)
+        
+        library, created = Library.objects.get_or_create(user=request.user.userprofile)
+        
+        if library.books.filter(pk=book_id).exists():
+            return Response(
+                {'message': 'Book already in library.'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        library.books.add(book)
+        return Response(
+            {'message': f'Book "{book.title}" added to library.'}, 
+            status=status.HTTP_200_OK
         )
-        return obj
+    
+# remove a book in library
+class RemoveBookFromLibraryView(generics.GenericAPIView):
+    serializer_class = LibrarySerializer
+    permission_classes = [IsAuthenticated]
+    
+    def delete(self, request, *args, **kwargs):
+        book_id = kwargs.get('book_id')
+        book = get_object_or_404(Book, pk=book_id)
+        
+        library, created = Library.objects.get_or_create(user=request.user.userprofile)
+        
+        if not library.books.filter(pk=book_id).exists():
+            return Response(
+                {'message': 'Book not in library.'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        library.books.remove(book)
+        return Response(
+            {'message': f'Book "{book.title}" removed from library.'}, 
+            status=status.HTTP_200_OK
+        )
